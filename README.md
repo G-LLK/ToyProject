@@ -1,10 +1,10 @@
-# 🧪 다운로드 후 테스트 가이드
+# 🧪 다운로드 후 테스트 가이드 (Helm 기반 GitOps)
 
-`0422-full-package.tar.gz`를 다운로드한 후 Helm Chart 및 KEDA 기반의 오토스케일링 애플리케이션을 테스트하려면 다음 순서대로 진행하세요.
+이 프로젝트는 Helm Chart로 구성된 애플리케이션을 GitHub 저장소에 올려 ArgoCD로 자동 배포되도록 구성되어 있습니다.
 
 ---
 
-## 📦 1. 패키지 압축 해제 및 진입
+## 📦 1. 패키지 압축 해제 및 디렉토리 진입
 
 ```bash
 tar -xzvf 0422-full-package.tar.gz
@@ -15,52 +15,99 @@ cd 0422
 
 ## 🔧 2. 사전 환경 구성 확인
 
-Kubernetes 클러스터(v1.29 이상)가 실행 중이고, Helm(v3 이상), Metrics Server(정상 작동), Ingress Controller(NGINX), KEDA, Harbor(프라이빗 레지스트리) 가 설치되어 있어야 하며, 이미지 접근을 위한 `imagePullSecret` 이 생성되어 있고, 네임스페이스 `aws0418`이 존재해야 합니다.
+- Kubernetes 클러스터 (v1.29+)
+- Helm v3+
+- Metrics Server
+- Ingress Controller (NGINX)
+- KEDA 설치됨
+- Harbor (프라이빗 레지스트리)
+- ArgoCD 설치됨
+- 네임스페이스 `aws0418` 존재
 
-필요 시 아래 명령으로 네임스페이스를 생성하세요:
+필요 시 네임스페이스 생성:
 
 ```bash
 kubectl create namespace aws0418
 ```
 
-Harbor 이미지 인증을 위한 `Secret` 예시:
+Harbor 이미지 인증을 위한 secret 생성:
 
 ```bash
 kubectl create secret docker-registry page-pull-secret \
   --docker-server=hub.aws9.pri \
   --docker-username=<HARBOR_ID> \
-  --docker-password=<HARBOR_PASSWORD> \
+  --docker-password=<HARBOR_PW> \
   --docker-email=<EMAIL> \
   -n aws0418
 ```
 
 ---
 
-## ⚙️ 3. (필요 시) KEDA 설치
+## 🚀 3. Helm Chart GitHub에 올리기
 
-```bash
-helm repo add kedacore https://kedacore.github.io/charts
-helm repo update
-helm install keda kedacore/keda --namespace keda --create-namespace
+`aws9chart/` 디렉토리를 GitHub 저장소에 업로드합니다. 예시는 다음과 같습니다:
+
+```
+자신의 git repo 주소
+```
+
+이 디렉토리에는 다음 파일들이 포함되어야 합니다:
+
+```
+aws9chart/
+├── Chart.yaml
+├── values.yaml
+└── templates/
+    ├── deployment.yaml
+    ├── service.yaml
+    ├── ingress.yaml
+    └── scaledobject.yaml
 ```
 
 ---
 
-## 🚀 4. Helm Chart 배포
+## 🔁 4. ArgoCD에 Helm Chart 등록 (자동 배포)
+
+ArgoCD UI 또는 CLI에서 아래와 같이 Application을 생성하세요:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: aws9auto-chart
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/rraassa/aws9argo.git
+    targetRevision: main
+    path: aws9chart
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: aws0418
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+```
+
+적용 명령:
 
 ```bash
-cd aws9chart
-helm install aws9auto . -n aws0418
+kubectl apply -f aws9-application.yaml -n argocd
 ```
 
 ---
 
-## 🔍 5. 배포 결과 확인
+## 🔍 5. 상태 확인
 
 ```bash
 kubectl get all -n aws0418
-kubectl get scaledobject -n aws0418
 kubectl get hpa -n aws0418
+kubectl get scaledobject -n aws0418
 kubectl get ingress -n aws0418
 ```
 
@@ -68,33 +115,9 @@ kubectl get ingress -n aws0418
 
 ## 🌐 6. 서비스 접속 테스트
 
-Ingress가 외부에 노출된 IP를 통해 잘 작동하는지 아래 명령으로 확인합니다:
-
 ```bash
-curl http://<LOADBALANCER_IP>/main
-curl http://<LOADBALANCER_IP>/blog
-curl http://<LOADBALANCER_IP>/news
-curl http://<LOADBALANCER_IP>/shop
+curl https://www.aws9.pri/main
+curl https://www.aws9.pri/blog
+curl https://www.aws9.pri/news
+curl https://www.aws9.pri/shop
 ```
-
-예시:
-
-```bash
-curl http://211.183.3.202/main
-```
-
----
-
-## 📁 구성 요약
-
-```
-0422/
-├── aws9chart/           # Helm Chart 디렉토리
-├── hardorimage/         # 각 페이지용 Dockerfile 및 HTML
-└── *.yaml               # 직접 실행 가능한 개별 리소스 파일들
- 
-```
-
----
-
-✅ 모든 구성 요소가 준비되어 있다면 `aws9auto` 라는 이름의 Helm 릴리스를 통해 4개의 페이지(main, blog, news, shop)를 배포하고, 시간 및 CPU 기반으로 오토스케일링이 정상 작동하는지 테스트할 수 있습니다.
