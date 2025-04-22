@@ -91,8 +91,8 @@ curl http://211.183.3.202/main
 0422/
 ├── aws9chart/           # Helm Chart 디렉토리
 ├── hardorimage/         # 각 페이지용 Dockerfile 및 HTML
-├── *.yaml               # 직접 실행 가능한 개별 리소스 파일들
-└── README.md            # 현재 가이드 파일
+└── *.yaml               # 직접 실행 가능한 개별 리소스 파일들
+ 
 ```
 
 ---
