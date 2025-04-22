@@ -1,0 +1,33 @@
+replicaCount: 1
+image:
+  repository: hub.aws9.pri/page
+  tag: latest
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "64Mi"
+  limits:
+    cpu: "200m"
+    memory: "128Mi"
+
+apps:
+  - name: main
+  - name: blog
+  - name: news
+  - name: shop
+
+service:
+  type: ClusterIP
+  port: 80
+
+keda:
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  cpuTarget: "60"
+  cron:
+    timezone: "Asia/Seoul"
+    start: "0 9 * * *"
+    end: "0 18 * * *"
+    desiredReplicas: "3"

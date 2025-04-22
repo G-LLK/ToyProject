@@ -1,0 +1,3 @@
+# Dockerfile
+FROM nginx:latest
+COPY news.html /usr/share/nginx/html/index.html

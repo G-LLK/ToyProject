@@ -1,0 +1,27 @@
+{{- range .Values.apps }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ .name }}-autoscaler
+spec:
+  scaleTargetRef:
+    name: {{ .name }}-deploy
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: {{ $.Values.keda.minReplicaCount }}
+  maxReplicaCount: {{ $.Values.keda.maxReplicaCount }}
+  triggers:
+    - type: cron
+      metadata:
+        timezone: "{{ $.Values.keda.cron.timezone }}"
+        start: "{{ $.Values.keda.cron.start }}"
+        end: "{{ $.Values.keda.cron.end }}"
+        desiredReplicas: "{{ $.Values.keda.cron.desiredReplicas }}"
+    - type: cpu
+      metadata:
+        type: Utilization
+        value: "{{ $.Values.keda.cpuTarget }}"
+---
+{{- end }}
+
+---
