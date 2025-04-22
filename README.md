@@ -121,3 +121,6 @@ curl https://www.aws9.pri/blog
 curl https://www.aws9.pri/news
 curl https://www.aws9.pri/shop
 ```
+
+## 접속 시 화면
+![image](https://github.com/user-attachments/assets/8c391c8b-0750-451f-9c0a-8295257aa15d)
