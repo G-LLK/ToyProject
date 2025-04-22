@@ -1,3 +1,0 @@
-# Dockerfile
-FROM nginx:latest
-COPY shop.html /usr/share/nginx/html/index.html
