@@ -15,12 +15,23 @@ cd 0422
 
 ## 🔧 2. 사전 환경 구성 확인
 
-Kubernetes 클러스터(v1.29 이상)가 실행 중이고, Helm(v3 이상), Metrics Server(정상 작동), Ingress Controller(NGINX), KEDA가 설치되어 있으며, 네임스페이스 `aws0418`이 존재해야 합니다.
+Kubernetes 클러스터(v1.29 이상)가 실행 중이고, Helm(v3 이상), Metrics Server(정상 작동), Ingress Controller(NGINX), KEDA, Harbor(프라이빗 레지스트리) 가 설치되어 있어야 하며, 이미지 접근을 위한 `imagePullSecret` 이 생성되어 있고, 네임스페이스 `aws0418`이 존재해야 합니다.
 
 필요 시 아래 명령으로 네임스페이스를 생성하세요:
 
 ```bash
 kubectl create namespace aws0418
+```
+
+Harbor 이미지 인증을 위한 `Secret` 예시:
+
+```bash
+kubectl create secret docker-registry page-pull-secret \
+  --docker-server=hub.aws9.pri \
+  --docker-username=<HARBOR_ID> \
+  --docker-password=<HARBOR_PASSWORD> \
+  --docker-email=<EMAIL> \
+  -n aws0418
 ```
 
 ---
@@ -80,8 +91,8 @@ curl http://211.183.3.202/main
 0422/
 ├── aws9chart/           # Helm Chart 디렉토리
 ├── hardorimage/         # 각 페이지용 Dockerfile 및 HTML
-└── *.yaml               # 직접 실행 가능한 개별 리소스 파일들
-
+├── *.yaml               # 직접 실행 가능한 개별 리소스 파일들
+└── README.md            # 현재 가이드 파일
 ```
 
 ---
