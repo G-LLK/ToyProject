@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-deploy
+  namespace: aws0418
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog
+  template:
+    metadata:
+      labels:
+        app: blog
+    spec:
+      imagePullSecrets:
+        - name: page-pull-secret
+      containers:
+        - name: blog
+          image: hub.aws9.pri/page/blog:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-svc
+  namespace: aws0418
+spec:
+  type: ClusterIP
+  selector:
+    app: blog
+  ports:
+    - port: 80
+      targetPort: 80

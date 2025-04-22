@@ -1,0 +1,101 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: main-autoscaler
+  namespace: aws0418
+spec:
+  scaleTargetRef:
+    name: main-deploy
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+    - type: cron
+      metadata:
+        timezone: "Asia/Seoul"
+        start: "0 9 * * *"
+        end: "0 18 * * *"
+        desiredReplicas: "3"
+    - type: cpu
+      metadata:
+        type: Utilization
+        value: "60"
+
+---
+# blog-deploy 스케일링
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: blog-autoscaler
+  namespace: aws0418
+spec:
+  scaleTargetRef:
+    name: blog-deploy
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+    - type: cron
+      metadata:
+        timezone: "Asia/Seoul"
+        start: "0 9 * * *"
+        end: "0 18 * * *"
+        desiredReplicas: "3"
+    - type: cpu
+      metadata:
+        type: Utilization
+        value: "60"
+
+---
+# news-deploy 스케일링
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: news-autoscaler
+  namespace: aws0418
+spec:
+  scaleTargetRef:
+    name: news-deploy
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+    - type: cron
+      metadata:
+        timezone: "Asia/Seoul"
+        start: "0 9 * * *"
+        end: "0 18 * * *"
+        desiredReplicas: "3"
+    - type: cpu
+      metadata:
+        type: Utilization
+        value: "60"
+
+---
+# shop-deploy 스케일링
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: shop-autoscaler
+  namespace: aws0418
+spec:
+  scaleTargetRef:
+    name: shop-deploy
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+    - type: cron
+      metadata:
+        timezone: "Asia/Seoul"
+        start: "0 9 * * *"
+        end: "0 18 * * *"
+        desiredReplicas: "3"
+    - type: cpu
+      metadata:
+        type: Utilization
+        value: "60"

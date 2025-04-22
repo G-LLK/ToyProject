@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: news-deploy
+  namespace: aws0418
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: news
+  template:
+    metadata:
+      labels:
+        app: news
+    spec:
+      imagePullSecrets:
+        - name: page-pull-secret
+      containers:
+        - name: news
+          image: hub.aws9.pri/page/news:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: news-svc
+  namespace: aws0418
+spec:
+  type: ClusterIP
+  selector:
+    app: news
+  ports:
+    - port: 80
+      targetPort: 80
