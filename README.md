@@ -41,34 +41,7 @@ kubectl create secret docker-registry page-pull-secret \
   -n aws0418
 ```
 
----
-
-## 🚀 3. Helm Chart GitHub에 올리기
-
-`aws9chart/` 디렉토리를 GitHub 저장소에 업로드합니다. 예시는 다음과 같습니다:
-
-```
-자신의 git repo 주소
-```
-
-이 디렉토리에는 다음 파일들이 포함되어야 합니다:
-
-```
-aws9chart/
-├── Chart.yaml
-├── values.yaml
-└── templates/
-    ├── deployment.yaml
-    ├── service.yaml
-    ├── ingress.yaml
-    └── scaledobject.yaml
-```
-
----
-
-
-
-## 🔍 4. 상태 확인
+## 🔍 3. 상태 확인
 
 ```bash
 kubectl get all -n aws0418
@@ -79,7 +52,7 @@ kubectl get ingress -n aws0418
 
 ---
 
-## 🌐 5. 서비스 접속 테스트
+## 🌐 4. 서비스 접속 테스트
 
 ```bash
 curl https://www.aws9.pri/main
