@@ -66,43 +66,9 @@ aws9chart/
 
 ---
 
-## 🔁 4. ArgoCD에 Helm Chart 등록 (자동 배포)
 
-ArgoCD UI 또는 CLI에서 아래와 같이 Application을 생성하세요:
 
-```yaml
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: aws9auto-chart
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/rraassa/aws9argo.git
-    targetRevision: main
-    path: aws9chart
-    helm:
-      valueFiles:
-        - values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: aws0418
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-```
-
-적용 명령:
-
-```bash
-kubectl apply -f aws9-application.yaml -n argocd
-```
-
----
-
-## 🔍 5. 상태 확인
+## 🔍 4. 상태 확인
 
 ```bash
 kubectl get all -n aws0418
@@ -113,7 +79,7 @@ kubectl get ingress -n aws0418
 
 ---
 
-## 🌐 6. 서비스 접속 테스트
+## 🌐 5. 서비스 접속 테스트
 
 ```bash
 curl https://www.aws9.pri/main
