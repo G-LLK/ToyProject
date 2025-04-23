@@ -6,7 +6,6 @@
 
 ```bash
 tar -xzvf 0422-full-package.tar.gz
-cd 0422
 ```
 
 ---
@@ -17,40 +16,12 @@ cd 0422
 - Helm v3+
 - Metrics Server
 - Ingress Controller (NGINX)
-- KEDA 설치됨
-- Harbor (프라이빗 레지스트리)
-- ArgoCD 설치됨
-- 네임스페이스 `aws0418` 존재
+- KEDA
+- Harbor
+- ArgoCD
+- 네임스페이스 `aws0418` 생성
 
-필요 시 네임스페이스 생성:
-
-```bash
-kubectl create namespace aws0418
-```
-
-Harbor 이미지 인증을 위한 secret 생성:
-
-```bash
-kubectl create secret docker-registry page-pull-secret \
-  --docker-server=hub.aws9.pri \
-  --docker-username=<HARBOR_ID> \
-  --docker-password=<HARBOR_PW> \
-  --docker-email=<EMAIL> \
-  -n aws0418
-```
-
-## 🔍 3. 상태 확인
-
-```bash
-kubectl get all -n aws0418
-kubectl get hpa -n aws0418
-kubectl get scaledobject -n aws0418
-kubectl get ingress -n aws0418
-```
-
----
-
-## 🌐 4. 서비스 접속 테스트
+## 🌐 3. 서비스 접속 테스트
 
 ```bash
 curl https://www.aws9.pri/main
